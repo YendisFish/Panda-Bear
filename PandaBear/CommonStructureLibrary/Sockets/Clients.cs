@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CSL.Sockets
@@ -46,6 +47,7 @@ namespace CSL.Sockets
         public static async Task waitForServer(Stream stream)
         {
             byte[] x = new byte[1000];
+            stream.ReadTimeout = 10;
             int y = stream.Read(x, 0, 1000);
 
             for(int m = 0; m < y; m++)
@@ -87,9 +89,13 @@ namespace CSL.Sockets
 
                         Console.WriteLine("Sending data...");
 
+                        stream.WriteTimeout = 10;
                         stream.Write(x, 0, x.Length);
 
-                        await waitForServer(stream);
+                        ThreadStart th = new ThreadStart(async () => await waitForServer(stream));
+                        Thread ths = new Thread(th);
+                        ths.Start();
+                        continue;
 
                     }
 

@@ -56,6 +56,7 @@ namespace CSL.Sockets
             ASCIIEncoding toSend = new ASCIIEncoding();
             try
             {
+                socket.SendTimeout = 10;
                 socket.Send(toSend.GetBytes(output));
             } catch(Exception ex)
             {
@@ -110,6 +111,8 @@ namespace CSL.Sockets
                         //Thread t = new Thread(th);
                         //t.Start();
 
+                        ThreadStart th = new ThreadStart(() => sender(socket, sendBack));
+                        Thread ths = new Thread(th);
                         await sender(socket, sendBack);
                     }
                     catch (Exception ex)
