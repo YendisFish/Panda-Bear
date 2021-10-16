@@ -8,7 +8,7 @@ namespace PandaBear_Client
 {
     class Program
     {
-        private static string[] argGrabber(string[] args)
+        private static string[] argGrabber()
         {
             JObject reader = JObject.Parse(File.ReadAllText("Settings.json"));
 
@@ -22,9 +22,9 @@ namespace PandaBear_Client
             return toArray.ToArray();
         }
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            string[] toset = argGrabber(args);
+            string[] toset = argGrabber();
 
             try
             {
