@@ -11,7 +11,7 @@ namespace PandaBear_Server
     {
         private static string[] argGrabber()
         {
-            JObject reader = JObject.Parse(File.ReadAllText("Settings.json"));
+            JObject reader = JObject.Parse(File.ReadAllText("./Settings.json"));
 
             List<string> toArray = new List<string>();
 

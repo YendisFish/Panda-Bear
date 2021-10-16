@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 
 namespace CSL.Sockets
 {
@@ -66,26 +68,37 @@ namespace CSL.Sockets
                 Socket socket = Listener.AcceptSocket();
                 Console.WriteLine($"New connection ({socket.RemoteEndPoint})");
 
-                byte[] x = new byte[100];
-                int y = socket.Receive(x);
-                Console.WriteLine("Incoming data...");
 
-                List<String> output = new List<string>();
-
-                for (int m = 0; m < y; m++)
+                while (true)
                 {
-                    Console.Write(Convert.ToChar(x[m]));
-                    output.Add(Convert.ToString(x[m]));
-                }
+                    byte[] x = new byte[100];
+                    int y = socket.Receive(x);
+                    Console.WriteLine("Incoming data...");
 
-                Console.WriteLine("");
+                    List<String> output = new List<string>();
 
-                try
-                {
-                    Process.Start("CMD.exe", output.ToArray().ToString());
-                } catch(Exception ex)
-                {
-                    Console.WriteLine("Server Error: " + ex.Message);
+                    string endout = "";
+
+                    for (int m = 0; m < y; m++)
+                    {
+                        Console.Write(Convert.ToChar(x[m]));
+                        output.Add(Convert.ToString(x[m]));
+
+                        endout = endout + Convert.ToChar(x[m]).ToString();
+                    }
+
+                    Console.WriteLine("");
+
+                    try
+                    {
+                        ThreadStart th = new ThreadStart(() => process(endout));
+                        Thread t = new Thread(th);
+                        t.Start();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Server Error: " + ex.Message);
+                    }
                 }
 
             }
@@ -94,6 +107,11 @@ namespace CSL.Sockets
                 Console.WriteLine("Failed to bind to port " + args.port + ". Maybe it is being used by another process?");
                 Console.WriteLine("EXCEPTION: " + ex.Message);
             }
+        }
+
+        public static void process(string args)
+        {
+            Process.Start("CMD.exe", "/c" + args);
         }
     }
 }
