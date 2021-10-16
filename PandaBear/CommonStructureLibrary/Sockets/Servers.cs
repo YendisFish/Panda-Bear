@@ -7,7 +7,7 @@ using System.Text;
 
 namespace CSL.Sockets
 {
-    public record ServerInfo(string target, string port, string? data, string? name = null);
+    public record ServerInfo(string target, string port, string? data = null, string? name = null);
 
 
     public class Servers
