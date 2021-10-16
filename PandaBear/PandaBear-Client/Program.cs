@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using CSL.Sockets;
 using Newtonsoft.Json.Linq;
 
@@ -22,7 +23,7 @@ namespace PandaBear_Client
             return toArray.ToArray();
         }
 
-        private static void Main(string[] args)
+        private static async Task MainAsync(string[] args) 
         {
             string[] toset = argGrabber();
 
@@ -31,11 +32,17 @@ namespace PandaBear_Client
                 ServerInfo info = new ServerInfo(toset[0], toset[1], toset[2], toset[3]);
 
                 Clients.shellClient(info);
-            } catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine("Connection failed!");
                 Console.WriteLine(ex.Message);
             }
+        }
+
+        private static void Main(string[] args)
+        {
+            MainAsync(args);
         }
     }
 }
