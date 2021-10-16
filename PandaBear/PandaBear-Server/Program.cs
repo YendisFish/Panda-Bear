@@ -6,7 +6,7 @@ namespace PandaBear_Server
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("Server INIT");
         }
     }
 }
