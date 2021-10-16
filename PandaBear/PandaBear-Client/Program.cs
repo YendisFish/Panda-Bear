@@ -1,88 +1,30 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using CSL.Sockets;
+using Newtonsoft.Json.Linq;
 
 namespace PandaBear_Client
 {
     class Program
     {
-        private static string[] argumentParser(string[] args)
+        private static string[] argGrabber(string[] args)
         {
-            if(args.ToString().Contains("target") && args.ToString().Contains("port") && args.ToString().Contains("data") && args.ToString().Contains("name"))
-            {
-                foreach (string val in args)
-                {
-                    if (val.Contains("target:"))
-                    {
-                        args[0] = val;
-                    }
-                    if (val.Contains("port:"))
-                    {
-                        args[1] = val;
-                    }
-                    if (val.Contains("data:"))
-                    {
-                        args[2] = val;
-                    }
-                    if (val.Contains("name:"))
-                    {
-                        args[3] = val;
-                    }
-                }
+            JObject reader = JObject.Parse(File.ReadAllText("Settings.json"));
 
-                return args;
-            }
-            if (args.ToString().Contains("target") && args.ToString().Contains("port") && args.ToString().Contains("data"))
-            {
-                foreach (string val in args)
-                {
-                    if (val.Contains("target:"))
-                    {
-                        args[0] = val;
-                    }
-                    if (val.Contains("port:"))
-                    {
-                        args[1] = val;
-                    }
-                    if (val.Contains("data:"))
-                    {
-                        args[2] = val;
-                    }
-                }
-                return args;
-            }
-            if (args.ToString().Contains("target") && args.ToString().Contains("port"))
-            {
-                foreach (string val in args)
-                {
-                    if (val.Contains("target:"))
-                    {
-                        args[0] = val;
-                    }
-                    if (val.Contains("port:"))
-                    {
-                        args[1] = val;
-                    }
+            List<string> toArray = new List<string>();
 
-                }
-                return args;
-            }
-            if (args.ToString().Contains("target"))
-            {
-                foreach (string val in args)
-                {
-                    if (val.Contains("target:"))
-                    {
-                        args[0] = val;
-                    }
-                }
-                return args;
-            }
-            return null;
+            toArray.Add((string)reader["target"]);
+            toArray.Add((string)reader["port"]);
+            toArray.Add((string)reader["data"]);
+            toArray.Add((string)reader["name"]);
+
+            return toArray.ToArray();
         }
 
         static void Main(string[] args)
         {
-            string[] toset = argumentParser(args);
+            string[] toset = argGrabber(args);
 
             try
             {
